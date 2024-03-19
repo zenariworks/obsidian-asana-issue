@@ -1,15 +1,15 @@
 import * as obsidian from 'obsidian'
-import JiraClient from '../src/client/jiraClient'
+import AsanaClient from '../src/client/asanaClient'
 import { TestAccountOpen } from './testData'
 
 const kIssueKey = 'AAA-123'
 const requestUrlMock = jest.spyOn(obsidian, 'requestUrl')
 
-describe('JiraClient', () => {
+describe('AsanaClient', () => {
     describe('Positive tests', () => {
         // test('getIssue minimal', async () => {
         //     requestUrlMock.mockReturnValue({ status: 200, json: {} } as any)
-        //     expect(await JiraClient.getIssue(kIssueKey)).toEqual(true)
+        //     expect(await AsanaClient.getIssue(kIssueKey)).toEqual(true)
         //     expect(requestUrlMock.mock.calls[0][0]).toEqual({
         //         contentType: 'application/json',
         //         headers: {},
@@ -20,7 +20,7 @@ describe('JiraClient', () => {
 
         test('testConnection', async () => {
             requestUrlMock.mockReturnValue({ status: 200 } as any)
-            expect(await JiraClient.testConnection(TestAccountOpen)).toEqual(true)
+            expect(await AsanaClient.testConnection(TestAccountOpen)).toEqual(true)
             expect(requestUrlMock.mock.calls[0][0]).toEqual({
                 contentType: 'application/json',
                 headers: {},
@@ -35,7 +35,7 @@ describe('JiraClient', () => {
             expect.assertions(2)
             requestUrlMock.mockReturnValue({ status: 401 } as any)
             try {
-                await JiraClient.testConnection(TestAccountOpen)
+                await AsanaClient.testConnection(TestAccountOpen)
             } catch (e) {
                 expect(e).toEqual(new Error(`HTTP status 401`))
                 expect(requestUrlMock.mock.calls[0][0]).toEqual({

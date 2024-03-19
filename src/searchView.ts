@@ -1,4 +1,4 @@
-import { COMMENT_REGEX, COMPACT_SYMBOL, ESearchColumnsTypes, ESearchResultsRenderingTypes, IJiraIssueAccountSettings, ISearchColumn } from "./interfaces/settingsInterfaces"
+import { COMMENT_REGEX, COMPACT_SYMBOL, ESearchColumnsTypes, ESearchResultsRenderingTypes, IAsanaIssueAccountSettings, ISearchColumn } from "./interfaces/settingsInterfaces"
 import { SettingsData } from "./settings"
 import { getAccountByAlias } from "./utils"
 
@@ -7,7 +7,7 @@ export class SearchView {
     query: string = ''
     limit: number = null
     columns: ISearchColumn[] = []
-    account: IJiraIssueAccountSettings = null
+    account: IAsanaIssueAccountSettings = null
     label: string = null
     private _cacheKey: string = null
 
@@ -96,7 +96,7 @@ export class SearchView {
     }
 
     toString(): string {
-        return '```jira-search\n' + this.toRawString() + '```'
+        return '```asana-search\n' + this.toRawString() + '```'
     }
 
     toRawString(): string {

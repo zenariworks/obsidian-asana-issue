@@ -187,7 +187,7 @@ account: ${TestAccountOpen.alias}
 `)
         })
         test('toString', () => {
-            expect(sv.toString()).toEqual(`\`\`\`jira-search
+            expect(sv.toString()).toEqual(`\`\`\`asana-search
 type: ${kType}
 query: ${kQuery}
 limit: ${kLimit}
@@ -215,7 +215,7 @@ query: ${kQuery}
 `)
         })
         test('toString', () => {
-            expect(sv.toString()).toEqual(`\`\`\`jira-search
+            expect(sv.toString()).toEqual(`\`\`\`asana-search
 type: ${kType}
 query: ${kQuery}
 \`\`\``)

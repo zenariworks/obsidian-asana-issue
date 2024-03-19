@@ -1,4 +1,4 @@
-import { IJiraAutocompleteDataField, IJiraFieldSchema } from "./issueInterfaces"
+import { IAsanaAutocompleteDataField, IAsanaFieldSchema } from "./issueInterfaces"
 
 export enum EAuthenticationTypes {
     OPEN = 'OPEN',
@@ -22,8 +22,8 @@ export const AVATAR_RESOLUTION = '16x16'
 export const COMMENT_REGEX = /^\s*#/
 export const JIRA_KEY_REGEX = '[A-Z][A-Z0-9_]*-[0-9]+'
 
-export interface IJiraIssueSettings {
-    accounts: IJiraIssueAccountSettings[]
+export interface IAsanaIssueSettings {
+    accounts: IAsanaIssueAccountSettings[]
     apiBasePath: string
     cacheTime: string
     searchResultsLimit: number
@@ -37,7 +37,7 @@ export interface IJiraIssueSettings {
     logRequestsResponses: boolean
     logImagesFetch: boolean
     showColorBand: boolean
-    showJiraLink: boolean
+    showAsanaLink: boolean
     
     // Legacy credentials
     host?: string
@@ -47,7 +47,7 @@ export interface IJiraIssueSettings {
     bareToken?: string
 }
 
-export interface IJiraIssueAccountSettings {
+export interface IAsanaIssueAccountSettings {
     alias: string
     host: string
     authenticationType: EAuthenticationTypes
@@ -60,9 +60,9 @@ export interface IJiraIssueAccountSettings {
         statusColor: Record<string, string>
         customFieldsIdToName: Record<string, string>
         customFieldsNameToId: Record<string, string>
-        customFieldsType: Record<string, IJiraFieldSchema>
+        customFieldsType: Record<string, IAsanaFieldSchema>
         jqlAutocomplete: {
-            fields: IJiraAutocompleteDataField[]
+            fields: IAsanaAutocompleteDataField[]
             functions: {
                 [key: string]: [string]
             }

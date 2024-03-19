@@ -1,12 +1,12 @@
-import { IJiraIssueAccountSettings } from "./settingsInterfaces"
+import { IAsanaIssueAccountSettings } from "./settingsInterfaces"
 
-export interface IJiraIssue {
+export interface IAsanaIssue {
     id: string
     key: string
     fields: {
-        assignee: IJiraUser
+        assignee: IAsanaUser
         created: string
-        creator: IJiraUser
+        creator: IAsanaUser
         description: string
         duedate: string
         resolution: {
@@ -22,7 +22,7 @@ export interface IJiraIssue {
             iconUrl: string
             name: string
         }
-        reporter: IJiraUser
+        reporter: IAsanaUser
         status: {
             statusCategory: {
                 colorName: string
@@ -71,27 +71,27 @@ export interface IJiraIssue {
         }
         lastViewed: string
         worklog: {
-            worklogs: IJiraWorklog[]
+            worklogs: IAsanaWorklog[]
         }
         [k: string]: any
     }
-    account: IJiraIssueAccountSettings
+    account: IAsanaIssueAccountSettings
 }
 
-export interface IJiraWorklog {
+export interface IAsanaWorklog {
     id: string
-    author: IJiraUser
+    author: IAsanaUser
     comment: string
     create: string
     started: string
     timeSpent: string
     timeSpentSeconds: number
-    updateAuthor: IJiraUser
+    updateAuthor: IAsanaUser
     updated: string
     issueKey?: string
 }
 
-export interface IJiraUser {
+export interface IAsanaUser {
     active: boolean
     displayName: string
     name: string
@@ -106,34 +106,34 @@ export interface IJiraUser {
     }
 }
 
-export interface IJiraSearchResults {
-    issues: IJiraIssue[]
+export interface IAsanaSearchResults {
+    issues: IAsanaIssue[]
     maxResults: number
     startAt: number
     total: number
-    account: IJiraIssueAccountSettings
+    account: IAsanaIssueAccountSettings
 }
 
-export interface IJiraStatus {
+export interface IAsanaStatus {
     statusCategory: {
         colorName: string
     }
 }
 
-export interface IJiraField {
+export interface IAsanaField {
     custom: boolean
     id: string
     name: string
-    schema: IJiraFieldSchema
+    schema: IAsanaFieldSchema
 }
 
-export interface IJiraFieldSchema {
+export interface IAsanaFieldSchema {
     customId: number
     type: string
     items?: string
 }
 
-export interface IJiraAutocompleteDataField {
+export interface IAsanaAutocompleteDataField {
     value: string
     displayName: string
     auto: string
@@ -144,8 +144,8 @@ export interface IJiraAutocompleteDataField {
     types: [string]
 }
 
-export interface IJiraAutocompleteData {
-    visibleFieldNames: IJiraAutocompleteDataField[]
+export interface IAsanaAutocompleteData {
+    visibleFieldNames: IAsanaAutocompleteDataField[]
     visibleFunctionNames: [{
         value: string
         displayName: string
@@ -155,14 +155,14 @@ export interface IJiraAutocompleteData {
     jqlReservedWords: [string]
 }
 
-export interface IJiraAutocompleteField {
+export interface IAsanaAutocompleteField {
     results: [{
         value: string
         displayName: string
     }]
 }
 
-export interface IJiraDevStatus {
+export interface IAsanaDevStatus {
     errors: []
     configErrors: []
     summary: {
@@ -203,13 +203,13 @@ export interface IJiraDevStatus {
     }
 }
 
-export interface IJiraBoard {
+export interface IAsanaBoard {
     id: number
     name: string
     type: string
 }
 
-export interface IJiraSprint {
+export interface IAsanaSprint {
     id: number
     state: ESprintState
     name: string
@@ -245,10 +245,10 @@ const newEmptyUser = () => {
         },
         displayName: '',
         self: '',
-    } as IJiraUser
+    } as IAsanaUser
 }
 
-const buildEmptyIssue = (): IJiraIssue => JSON.parse(JSON.stringify({
+const buildEmptyIssue = (): IAsanaIssue => JSON.parse(JSON.stringify({
     key: '',
     id: '',
     account: null,
@@ -285,7 +285,7 @@ const buildEmptyIssue = (): IJiraIssue => JSON.parse(JSON.stringify({
             worklogs: []
         }
     },
-} as IJiraIssue))
+} as IAsanaIssue))
 
 function isObject(item: any): boolean {
     return (item && typeof item === 'object' && !Array.isArray(item))
@@ -317,7 +317,7 @@ function mergeDeep(target: any, ...sources: any[]): any {
     return mergeDeep(target, ...sources)
 }
 
-export function toDefaultedIssue(originalIssue: IJiraIssue): IJiraIssue {
+export function toDefaultedIssue(originalIssue: IAsanaIssue): IAsanaIssue {
     if (originalIssue) {
         return mergeDeep(buildEmptyIssue(), originalIssue)
     }

@@ -1,15 +1,15 @@
 import { MarkdownPostProcessorContext, setIcon } from "obsidian"
-import { toDefaultedIssue, IJiraSearchResults } from "../interfaces/issueInterfaces"
-import JiraClient from "../client/jiraClient"
+import { toDefaultedIssue, IAsanaSearchResults } from "../interfaces/issueInterfaces"
+import AsanaClient from "../client/asanaClient"
 import ObjectsCache from "../objectsCache"
 import { renderTableColumn } from "./renderTableColumns"
 import { SearchView } from "../searchView"
 import { SettingsData } from "../settings"
 import RC from "./renderingCommon"
-import { ESearchColumnsTypes, ESearchResultsRenderingTypes, IJiraIssueAccountSettings, SEARCH_COLUMNS_DESCRIPTION } from "../interfaces/settingsInterfaces"
+import { ESearchColumnsTypes, ESearchResultsRenderingTypes, IAsanaIssueAccountSettings, SEARCH_COLUMNS_DESCRIPTION } from "../interfaces/settingsInterfaces"
 
 
-async function renderSearchResults(rootEl: HTMLElement, searchView: SearchView, searchResults: IJiraSearchResults): Promise<void> {
+async function renderSearchResults(rootEl: HTMLElement, searchView: SearchView, searchResults: IAsanaSearchResults): Promise<void> {
     searchView.account = searchResults.account
     if (searchView.type === ESearchResultsRenderingTypes.LIST) {
         renderSearchResultsList(rootEl, searchResults)
@@ -18,7 +18,7 @@ async function renderSearchResults(rootEl: HTMLElement, searchView: SearchView, 
     }
 }
 
-async function renderSearchResultsTable(rootEl: HTMLElement, searchView: SearchView, searchResults: IJiraSearchResults): Promise<void> {
+async function renderSearchResultsTable(rootEl: HTMLElement, searchView: SearchView, searchResults: IAsanaSearchResults): Promise<void> {
     const table = createEl('table', { cls: `table is-bordered is-striped is-narrow is-hoverable is-fullwidth ${RC.getTheme()}` })
     renderSearchResultsTableHeader(table, searchView, searchResults.account)
     await renderSearchResultsTableBody(table, searchView, searchResults)
@@ -27,7 +27,7 @@ async function renderSearchResultsTable(rootEl: HTMLElement, searchView: SearchV
     rootEl.replaceChildren(RC.renderContainer([table, footer]))
 }
 
-function renderSearchResultsTableHeader(table: HTMLElement, searchView: SearchView, account: IJiraIssueAccountSettings): void {
+function renderSearchResultsTableHeader(table: HTMLElement, searchView: SearchView, account: IAsanaIssueAccountSettings): void {
     const header = createEl('tr', {
         parent:
             createEl('thead', { attr: { style: getAccountBandStyle(searchView.account) }, parent: table })
@@ -55,7 +55,7 @@ function renderSearchResultsTableHeader(table: HTMLElement, searchView: SearchVi
     }
 }
 
-async function renderSearchResultsTableBody(table: HTMLElement, searchView: SearchView, searchResults: IJiraSearchResults): Promise<void> {
+async function renderSearchResultsTableBody(table: HTMLElement, searchView: SearchView, searchResults: IAsanaSearchResults): Promise<void> {
     const tbody = createEl('tbody', { parent: table })
     for (let issue of searchResults.issues) {
         issue = toDefaultedIssue(issue)
@@ -65,7 +65,7 @@ async function renderSearchResultsTableBody(table: HTMLElement, searchView: Sear
     }
 }
 
-function renderSearchResultsList(rootEl: HTMLElement, searchResults: IJiraSearchResults): void {
+function renderSearchResultsList(rootEl: HTMLElement, searchResults: IAsanaSearchResults): void {
     const list: HTMLElement[] = []
     for (const issue of searchResults.issues) {
         list.push(RC.renderIssue(issue))
@@ -73,18 +73,18 @@ function renderSearchResultsList(rootEl: HTMLElement, searchResults: IJiraSearch
     rootEl.replaceChildren(RC.renderContainer(list))
 }
 
-function getAccountBandStyle(account: IJiraIssueAccountSettings): string {
+function getAccountBandStyle(account: IAsanaIssueAccountSettings): string {
     if (SettingsData.showColorBand) {
         return 'border-left: 3px solid ' + account.color
     }
     return ''
 }
 
-function renderSearchFooter(rootEl: HTMLElement, searchView: SearchView, searchResults: IJiraSearchResults): HTMLElement {
+function renderSearchFooter(rootEl: HTMLElement, searchView: SearchView, searchResults: IAsanaSearchResults): HTMLElement {
     const searchFooter = createDiv({ cls: 'search-footer' })
     const searchCount = `Total results: ${searchResults.total.toString()} - ${searchResults.account.alias}`
 
-    if(SettingsData.showJiraLink) {
+    if(SettingsData.showAsanaLink) {
         createEl('a', {
             text: searchCount,
             href: RC.searchUrl(searchView.account, searchView.query),
@@ -122,15 +122,15 @@ export const SearchFenceRenderer = async (source: string, rootEl: HTMLElement, c
             if (cachedSearchResults.isError) {
                 RC.renderSearchError(rootEl, cachedSearchResults.data as string, searchView)
             } else {
-                await renderSearchResults(rootEl, searchView, cachedSearchResults.data as IJiraSearchResults)
+                await renderSearchResults(rootEl, searchView, cachedSearchResults.data as IAsanaSearchResults)
             }
         } else {
             // console.log(`Search results not available in the cache`)
             RC.renderLoadingItem('Loading...')
-            JiraClient.getSearchResults(searchView.query, { limit: searchView.limit || SettingsData.searchResultsLimit, account: searchView.account })
+            AsanaClient.getSearchResults(searchView.query, { limit: searchView.limit || SettingsData.searchResultsLimit, account: searchView.account })
                 .then(newSearchResults => {
                     searchView.account = newSearchResults.account
-                    const searchResults = ObjectsCache.add(searchView.getCacheKey(), newSearchResults).data as IJiraSearchResults
+                    const searchResults = ObjectsCache.add(searchView.getCacheKey(), newSearchResults).data as IAsanaSearchResults
                     renderSearchResults(rootEl, searchView, searchResults)
                 }).catch(err => {
                     ObjectsCache.add(searchView.getCacheKey(), err, true)

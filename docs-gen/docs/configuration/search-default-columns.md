@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 # Search default columns
 
-This section allows to define the default columns to show with the [jira-search component](/docs/configuration/search-default-columns).
+This section allows to define the default columns to show with the [asana-search component](/docs/configuration/search-default-columns).
 
 - Select from the drop down menu the column to display
 - Choose if you want the column to be displayed in compact ![compact-icon](/img/compact-icon.png) or extended ![extended-icon](/img/extended-icon.png) mode

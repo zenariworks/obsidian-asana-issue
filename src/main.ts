@@ -1,6 +1,6 @@
 import { App, Editor, MarkdownView, Notice, Plugin } from 'obsidian'
-import { JiraIssueSettingTab } from './settings'
-import JiraClient from './client/jiraClient'
+import { AsanaIssueSettingTab } from './settings'
+import AsanaClient from './client/asanaClient'
 import ObjectsCache from './objectsCache'
 import { ColumnsSuggest } from './suggestions/columnsSuggest'
 import { CountFenceRenderer } from './rendering/countFenceRenderer'
@@ -17,8 +17,8 @@ import API from './api/api'
 
 export let ObsidianApp: App = null
 
-export default class JiraIssuePlugin extends Plugin {
-    private _settingTab: JiraIssueSettingTab
+export default class AsanaIssuePlugin extends Plugin {
+    private _settingTab: AsanaIssueSettingTab
     private _columnsSuggest: ColumnsSuggest
     private _querySuggest: QuerySuggest
     private _inlineIssueViewPlugin: ViewPluginManager
@@ -27,22 +27,22 @@ export default class JiraIssuePlugin extends Plugin {
     async onload() {
         ObsidianApp = this.app
         this.registerAPI()
-        this._settingTab = new JiraIssueSettingTab(this.app, this)
+        this._settingTab = new AsanaIssueSettingTab(this.app, this)
         await this._settingTab.loadSettings()
         this.addSettingTab(this._settingTab)
-        JiraClient.updateCustomFieldsCache()
+        AsanaClient.updateCustomFieldsCache()
         // Load icons
         setupIcons()
         // Fence rendering
-        this.registerMarkdownCodeBlockProcessor('jira-issue', IssueFenceRenderer)
-        this.registerMarkdownCodeBlockProcessor('jira-search', SearchFenceRenderer)
-        this.registerMarkdownCodeBlockProcessor('jira-count', CountFenceRenderer)
-        // Suggestion menu for columns inside jira-search fence
+        this.registerMarkdownCodeBlockProcessor('asana-issue', IssueFenceRenderer)
+        this.registerMarkdownCodeBlockProcessor('asana-search', SearchFenceRenderer)
+        this.registerMarkdownCodeBlockProcessor('asana-count', CountFenceRenderer)
+        // Suggestion menu for columns inside asana-search fence
         this.app.workspace.onLayoutReady(() => {
             this._columnsSuggest = new ColumnsSuggest(this.app)
             this.registerEditorSuggest(this._columnsSuggest)
         })
-        // Suggestion menu for query inside jira-search fence
+        // Suggestion menu for query inside asana-search fence
         this.app.workspace.onLayoutReady(() => {
             this._querySuggest = new QuerySuggest(this.app)
             this.registerEditorSuggest(this._querySuggest)
@@ -56,29 +56,29 @@ export default class JiraIssuePlugin extends Plugin {
         // Settings refresh
         this._settingTab.onChange(() => {
             ObjectsCache.clear()
-            JiraClient.updateCustomFieldsCache()
+            AsanaClient.updateCustomFieldsCache()
             this._inlineIssueViewPlugin.update()
         })
 
         // Commands
         this.addCommand({
-            id: 'obsidian-jira-issue-clear-cache',
+            id: 'obsidian-asana-issue-clear-cache',
             name: 'Clear cache',
             callback: () => {
                 ObjectsCache.clear()
-                JiraClient.updateCustomFieldsCache()
-                new Notice('JiraIssue: Cache cleaned')
+                AsanaClient.updateCustomFieldsCache()
+                new Notice('AsanaIssue: Cache cleaned')
             }
         })
         this.addCommand({
-            id: 'obsidian-jira-issue-template-fence',
+            id: 'obsidian-asana-issue-template-fence',
             name: 'Insert issue template',
             editorCallback: (editor: Editor, view: MarkdownView) => {
-                editor.replaceRange('```jira-issue\n\n```', editor.getCursor())
+                editor.replaceRange('```asana-issue\n\n```', editor.getCursor())
             }
         })
         this.addCommand({
-            id: 'obsidian-jira-search-wizard-fence',
+            id: 'obsidian-asana-search-wizard-fence',
             name: 'Search wizard',
             editorCallback: (editor: Editor, view: MarkdownView) => {
                 new SearchWizardModal(this.app, (result) => {
@@ -87,10 +87,10 @@ export default class JiraIssuePlugin extends Plugin {
             }
         })
         this.addCommand({
-            id: 'obsidian-jira-count-template-fence',
+            id: 'obsidian-asana-count-template-fence',
             name: 'Insert count template',
             editorCallback: (editor: Editor, view: MarkdownView) => {
-                editor.replaceRange('```jira-count\n\n```', editor.getCursor())
+                editor.replaceRange('```asana-count\n\n```', editor.getCursor())
             }
         })
     }

@@ -1,6 +1,6 @@
 import { FrontMatterCache, TFile } from "obsidian"
-import { IJiraIssue } from "../interfaces/issueInterfaces"
-import { EColorSchema, IJiraIssueAccountSettings } from "../interfaces/settingsInterfaces"
+import { IAsanaIssue } from "../interfaces/issueInterfaces"
+import { EColorSchema, IAsanaIssueAccountSettings } from "../interfaces/settingsInterfaces"
 import { ObsidianApp } from "../main"
 import { SearchView } from "../searchView"
 import { SettingsData } from "../settings"
@@ -27,13 +27,13 @@ export const JIRA_STATUS_COLOR_MAP_BY_NAME: Record<string, string> = {
 }
 
 export default {
-    issueUrl(account: IJiraIssueAccountSettings, issueKey: string): string {
+    issueUrl(account: IAsanaIssueAccountSettings, issueKey: string): string {
         try {
             return (new URL(`${account.host}/browse/${issueKey}`)).toString()
         } catch (e) { return '' }
     },
 
-    searchUrl(account: IJiraIssueAccountSettings, searchQuery: string): string {
+    searchUrl(account: IAsanaIssueAccountSettings, searchQuery: string): string {
         try {
             return (new URL(`${account.host}/issues/?jql=${searchQuery}`)).toString()
         } catch (e) { return '' }
@@ -72,7 +72,7 @@ export default {
     },
 
     renderContainer(children: HTMLElement[]): HTMLElement {
-        const container = createDiv({ cls: 'jira-issue-container' })
+        const container = createDiv({ cls: 'asana-issue-container' })
         for (const child of children) {
             container.appendChild(child)
         }
@@ -104,7 +104,7 @@ export default {
         el.replaceChildren(this.renderContainer([tagsRow]))
     },
 
-    renderIssue(issue: IJiraIssue, compact = false): HTMLElement {
+    renderIssue(issue: IAsanaIssue, compact = false): HTMLElement {
         const tagsRow = createDiv('ji-tags has-addons')
         this.renderAccountColorBand(issue.account, tagsRow)
         if (issue.fields.issuetype.iconUrl) {
@@ -134,7 +134,7 @@ export default {
         return tagsRow
     },
 
-    renderAccountColorBand(account: IJiraIssueAccountSettings, parent: HTMLDivElement) {
+    renderAccountColorBand(account: IAsanaIssueAccountSettings, parent: HTMLDivElement) {
         if (SettingsData.showColorBand) {
             createSpan({ cls: `ji-tag ${this.getTheme()} ji-band`, attr: { style: `background-color: ${account.color}` }, title: account.alias, parent: parent })
         }

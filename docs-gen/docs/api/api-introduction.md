@@ -12,7 +12,7 @@ Some of the plugin that are compatible with those API are:
 
 It is possible to access the API using the plugin reference
 ```js
-this.app.plugins.plugins['obsidian-jira-issue'].api
+this.app.plugins.plugins['obsidian-asana-issue'].api
 ```
 
 or the global variable:
@@ -26,32 +26,32 @@ $ji
 The API are divided in few categories to help the navigation.
 
 ### API Category - [Base](/docs/api/api-base)
-This category contains all the functions to directly access the Jira API.
+This category contains all the functions to directly access the Asana API.
 
 The responses are cached in order to reduce the network load.
 
-- [`$ji.base.getIssue(issueKey: string, options: { fields?: string[], account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getIssue)
-- [`$ji.base.getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getSearchResults)
-- [`$ji.base.getDevStatus(issueId: string, options: { account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getDevStatus)
-- [`$ji.base.getBoards(projectKeyOrId: string, options: { limit?: number, offset?: number, account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getBoards)
-- [`$ji.base.getSprint(sprintId: number, options: { account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getSprint)
-- [`$ji.base.getSprints(boardId: number, options: { limit?: number, offset?: number, state?: ESprintState[], account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-base#getSprints)
-- [`$ji.base.getLoggedUser(account: IJiraIssueAccountSettings = null)`](/docs/api/api-base#getLoggedUser)
+- [`$ji.base.getIssue(issueKey: string, options: { fields?: string[], account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getIssue)
+- [`$ji.base.getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getSearchResults)
+- [`$ji.base.getDevStatus(issueId: string, options: { account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getDevStatus)
+- [`$ji.base.getBoards(projectKeyOrId: string, options: { limit?: number, offset?: number, account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getBoards)
+- [`$ji.base.getSprint(sprintId: number, options: { account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getSprint)
+- [`$ji.base.getSprints(boardId: number, options: { limit?: number, offset?: number, state?: ESprintState[], account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-base#getSprints)
+- [`$ji.base.getLoggedUser(account: IAsanaIssueAccountSettings = null)`](/docs/api/api-base#getLoggedUser)
 
 ### API Category - [Defaulted](/docs/api/api-defaulted)
-This category contains few functions to directly access the Jira API.
+This category contains few functions to directly access the Asana API.
 
-The difference with the [Base](#api-category---base) section is the format of the response where all the fields have been set to a default value in case the Jira API call replied with some missing data. This type of API allows you to simplify the data access because you don't need to check if the fields exists.
+The difference with the [Base](#api-category---base) section is the format of the response where all the fields have been set to a default value in case the Asana API call replied with some missing data. This type of API allows you to simplify the data access because you don't need to check if the fields exists.
 
 The responses are cached in order to reduce the network load.
 
 
-- [`$ji.defaulted.getIssue(issueKey: string, options: { fields?: string[], account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-defaulted#getIssue)
-- [`$ji.defaulted.getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IJiraIssueAccountSettings } = {})`](/docs/api/api-defaulted#getSearchResults)
+- [`$ji.defaulted.getIssue(issueKey: string, options: { fields?: string[], account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-defaulted#getIssue)
+- [`$ji.defaulted.getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IAsanaIssueAccountSettings } = {})`](/docs/api/api-defaulted#getSearchResults)
 
 ### API Category - [Macro](/docs/api/api-macro)
 
-This category contains functions that perform few Jira API call to get some advanced information. This category is designed to help the user access some data with few steps.
+This category contains functions that perform few Asana API call to get some advanced information. This category is designed to help the user access some data with few steps.
 
 Please open an Issue on GitHub to request more of this functions.
 
@@ -59,7 +59,7 @@ The responses are cached in order to reduce the network load.
 
 - [`$ji.macro.getActiveSprint(projectKeyOrId: string)`](/docs/api/api-macro#getActiveSprint)
 - [`$ji.macro.getActiveSprintName(projectKeyOrId: string)`](/docs/api/api-macro#getActiveSprintName)
-- [`$ji.macro.getWorkLogBySprint(projectKeyOrId: string, sprint: IJiraSprint)`](/docs/api/api-macro#getWorkLogBySprint)
+- [`$ji.macro.getWorkLogBySprint(projectKeyOrId: string, sprint: IAsanaSprint)`](/docs/api/api-macro#getWorkLogBySprint)
 - [`$ji.macro.getWorkLogBySprintId(projectKeyOrId: string, sprintId: number)`](/docs/api/api-macro#getWorkLogBySprintId)
 - [`$ji.macro.getWorkLogByDates(projectKeyOrId: string, startDate: string, endDate: string = 'now()')`](/docs/api/api-macro#getWorkLogByDates)
 - [`$ji.macro.getWorkLogSeriesByUser(projectKeyOrId: string, startDate: string, endDate: string = 'now()')`](/docs/api/api-macro#getWorkLogSeriesByUser)

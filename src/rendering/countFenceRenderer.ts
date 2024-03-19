@@ -1,11 +1,11 @@
 import { MarkdownPostProcessorContext } from "obsidian"
-import { IJiraSearchResults } from "../interfaces/issueInterfaces"
-import JiraClient from "../client/jiraClient"
+import { IAsanaSearchResults } from "../interfaces/issueInterfaces"
+import AsanaClient from "../client/asanaClient"
 import ObjectsCache from "../objectsCache"
 import RC from "./renderingCommon"
 import { SearchView } from "../searchView"
 
-function renderSearchCount(el: HTMLElement, searchResults: IJiraSearchResults, searchView: SearchView): void {
+function renderSearchCount(el: HTMLElement, searchResults: IAsanaSearchResults, searchView: SearchView): void {
     const tagsRow = createDiv('ji-tags has-addons')
     RC.renderAccountColorBand(searchResults.account, tagsRow)
     if (searchView.label !== '') {
@@ -23,12 +23,12 @@ export const CountFenceRenderer = async (source: string, el: HTMLElement, ctx: M
         if (cachedSearchResults.isError) {
             RC.renderSearchError(el, cachedSearchResults.data as string, searchView)
         } else {
-            renderSearchCount(el, (cachedSearchResults.data as IJiraSearchResults), searchView)
+            renderSearchCount(el, (cachedSearchResults.data as IAsanaSearchResults), searchView)
         }
     } else {
         RC.renderLoadingItem('Loading...')
-        JiraClient.getSearchResults(searchView.query, { limit: 1 }).then(newSearchResults => {
-            const searchResults = ObjectsCache.add(searchView.getCacheKey(), newSearchResults).data as IJiraSearchResults
+        AsanaClient.getSearchResults(searchView.query, { limit: 1 }).then(newSearchResults => {
+            const searchResults = ObjectsCache.add(searchView.getCacheKey(), newSearchResults).data as IAsanaSearchResults
             renderSearchCount(el, searchResults, searchView)
         }).catch(err => {
             ObjectsCache.add(searchView.getCacheKey(), err, true)

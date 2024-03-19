@@ -1,7 +1,7 @@
 {
-    "name": "obsidian-jira-issue",
+    "name": "obsidian-asana-issue",
     "version": "1.56.0",
-    "description": "This plugin allows you to track the progress of [Atlassian Jira](https://www.atlassian.com/software/jira) issues from your [Obsidian](https://obsidian.md/) notes.",
+    "description": "This plugin allows you to track the progress of [Atlassian Asana](https://www.atlassian.com/software/asana) issues from your [Obsidian](https://obsidian.md/) notes.",
     "main": "src/main.js",
     "scripts": {
         "dev": "node esbuild.config.mjs",
@@ -12,7 +12,7 @@
     },
     "keywords": [
         "obsidian",
-        "Jira",
+        "Asana",
         "Atlassian"
     ],
     "author": "marc0l92",

@@ -1,4 +1,4 @@
-import { ESprintState, IJiraSprint, IJiraWorklog, ISeries } from "../interfaces/issueInterfaces"
+import { ESprintState, IAsanaSprint, IAsanaWorklog, ISeries } from "../interfaces/issueInterfaces"
 import API from "./api"
 import moment from "moment"
 const ms = require('ms')
@@ -10,7 +10,7 @@ function dateTimeToDate(dateTime: string): string {
     return null
 }
 
-export async function getActiveSprint(projectKeyOrId: string): Promise<IJiraSprint> {
+export async function getActiveSprint(projectKeyOrId: string): Promise<IAsanaSprint> {
     const boards = await API.base.getBoards(projectKeyOrId, { limit: 1 })
     if (boards.length > 0) {
         const sprints = await API.base.getSprints(boards[0].id, { state: [ESprintState.ACTIVE], limit: 1 })
@@ -26,21 +26,21 @@ export async function getActiveSprintName(projectKeyOrId: string): Promise<strin
     return sprint ? sprint.name : ''
 }
 
-export async function getWorkLogBySprint(projectKeyOrId: string, sprint: IJiraSprint): Promise<IJiraWorklog[]> {
+export async function getWorkLogBySprint(projectKeyOrId: string, sprint: IAsanaSprint): Promise<IAsanaWorklog[]> {
     return await getWorkLogByDates(projectKeyOrId, sprint.startDate, sprint.endDate)
 }
 
-export async function getWorkLogBySprintId(projectKeyOrId: string, sprintId: number): Promise<IJiraWorklog[]> {
+export async function getWorkLogBySprintId(projectKeyOrId: string, sprintId: number): Promise<IAsanaWorklog[]> {
     const sprint = await API.base.getSprint(sprintId)
     return await getWorkLogByDates(projectKeyOrId, sprint.startDate, sprint.endDate)
 }
 
-export async function getWorkLogByDates(projectKeyOrId: string, startDate: string, endDate: string = 'now()'): Promise<IJiraWorklog[]> {
+export async function getWorkLogByDates(projectKeyOrId: string, startDate: string, endDate: string = 'now()'): Promise<IAsanaWorklog[]> {
     const searchResults = await API.base.getSearchResults(
         `project = "${projectKeyOrId}" AND worklogDate > ${dateTimeToDate(startDate)} AND worklogDate < ${dateTimeToDate(endDate)}`,
         { limit: 50, fields: ['worklog'] }
     )
-    let worklogs: IJiraWorklog[] = []
+    let worklogs: IAsanaWorklog[] = []
     for (const issue of searchResults.issues) {
         if (issue.fields.worklog && issue.fields.worklog.worklogs) {
             issue.fields.worklog.worklogs.forEach(worklog => worklog.issueKey = issue.key)

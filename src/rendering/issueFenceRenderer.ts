@@ -1,6 +1,6 @@
 import { MarkdownPostProcessorContext } from "obsidian"
-import { IJiraIssue } from "../interfaces/issueInterfaces"
-import JiraClient from "../client/jiraClient"
+import { IAsanaIssue } from "../interfaces/issueInterfaces"
+import AsanaClient from "../client/asanaClient"
 import ObjectsCache from "../objectsCache"
 import RC from "./renderingCommon"
 import { COMMENT_REGEX, JIRA_KEY_REGEX } from "../interfaces/settingsInterfaces"
@@ -33,7 +33,7 @@ function updateRenderedIssues(el: HTMLElement, renderedItems: Record<string, HTM
 
 function renderNoItems(): HTMLElement {
     const tagsRow = createDiv('ji-tags has-addons')
-    createSpan({ cls: 'ji-tag is-danger is-light', text: 'JiraIssue', parent: tagsRow })
+    createSpan({ cls: 'ji-tag is-danger is-light', text: 'AsanaIssue', parent: tagsRow })
     createSpan({ cls: 'ji-tag is-danger', text: 'No valid issues found', parent: tagsRow })
     return tagsRow
 }
@@ -49,13 +49,13 @@ export const IssueFenceRenderer = async (source: string, el: HTMLElement, ctx: M
                 if (cachedIssue.isError) {
                     renderedItems[issueKey] = RC.renderIssueError(issueKey, cachedIssue.data as string)
                 } else {
-                    renderedItems[issueKey] = RC.renderIssue(cachedIssue.data as IJiraIssue)
+                    renderedItems[issueKey] = RC.renderIssue(cachedIssue.data as IAsanaIssue)
                 }
             } else {
                 // console.log(`Issue not available in the cache`)
                 renderedItems[issueKey] = RC.renderLoadingItem(issueKey)
-                JiraClient.getIssue(issueKey).then(newIssue => {
-                    const issue = ObjectsCache.add(issueKey, newIssue).data as IJiraIssue
+                AsanaClient.getIssue(issueKey).then(newIssue => {
+                    const issue = ObjectsCache.add(issueKey, newIssue).data as IAsanaIssue
                     renderedItems[issueKey] = RC.renderIssue(issue)
                     updateRenderedIssues(el, renderedItems)
                 }).catch(err => {

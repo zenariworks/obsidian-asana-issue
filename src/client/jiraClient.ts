@@ -1,13 +1,13 @@
 import { Platform, requestUrl, RequestUrlParam, RequestUrlResponse } from 'obsidian'
-import { AVATAR_RESOLUTION, EAuthenticationTypes, IJiraIssueAccountSettings } from '../interfaces/settingsInterfaces'
-import { ESprintState, IJiraAutocompleteField, IJiraBoard, IJiraDevStatus, IJiraField, IJiraIssue, IJiraSearchResults, IJiraSprint, IJiraStatus, IJiraUser } from '../interfaces/issueInterfaces'
+import { AVATAR_RESOLUTION, EAuthenticationTypes, IAsanaIssueAccountSettings } from '../interfaces/settingsInterfaces'
+import { ESprintState, IAsanaAutocompleteField, IAsanaBoard, IAsanaDevStatus, IAsanaField, IAsanaIssue, IAsanaSearchResults, IAsanaSprint, IAsanaStatus, IAsanaUser } from '../interfaces/issueInterfaces'
 import { SettingsData } from "../settings"
 
 interface RequestOptions {
     method: string
     path: string
     queryParameters?: URLSearchParams
-    account?: IJiraIssueAccountSettings
+    account?: IAsanaIssueAccountSettings
     noBasePath?: boolean
 }
 
@@ -62,7 +62,7 @@ function buildUrl(host: string, requestOptions: RequestOptions): string {
     return url.toString()
 }
 
-function buildHeaders(account: IJiraIssueAccountSettings): Record<string, string> {
+function buildHeaders(account: IAsanaIssueAccountSettings): Record<string, string> {
     const requestHeaders: Record<string, string> = {}
     if (account.authenticationType === EAuthenticationTypes.BASIC || account.authenticationType === EAuthenticationTypes.CLOUD) {
         requestHeaders['Authorization'] = 'Basic ' + base64Encode(`${account.username}:${account.password}`)
@@ -109,7 +109,7 @@ async function sendRequest(requestOptions: RequestOptions): Promise<any> {
     }
 }
 
-async function sendRequestWithAccount(account: IJiraIssueAccountSettings, requestOptions: RequestOptions): Promise<RequestUrlResponse> {
+async function sendRequestWithAccount(account: IAsanaIssueAccountSettings, requestOptions: RequestOptions): Promise<RequestUrlResponse> {
     let response
     const requestUrlParam: RequestUrlParam = {
         method: requestOptions.method,
@@ -119,16 +119,16 @@ async function sendRequestWithAccount(account: IJiraIssueAccountSettings, reques
     }
     try {
         response = await requestUrl(requestUrlParam)
-        SettingsData.logRequestsResponses && console.info('JiraIssue:Fetch:', { request: requestUrlParam, response })
+        SettingsData.logRequestsResponses && console.info('AsanaIssue:Fetch:', { request: requestUrlParam, response })
     } catch (errorResponse) {
-        SettingsData.logRequestsResponses && console.warn('JiraIssue:Fetch:', { request: requestUrlParam, response: errorResponse })
+        SettingsData.logRequestsResponses && console.warn('AsanaIssue:Fetch:', { request: requestUrlParam, response: errorResponse })
         response = errorResponse
     }
     return response
 }
 
-async function preFetchImage(account: IJiraIssueAccountSettings, url: string): Promise<string> {
-    // Pre fetch only images hosted on the Jira server
+async function preFetchImage(account: IAsanaIssueAccountSettings, url: string): Promise<string> {
+    // Pre fetch only images hosted on the Asana server
     if (!url.startsWith(account.host)) {
         return url
     }
@@ -141,9 +141,9 @@ async function preFetchImage(account: IJiraIssueAccountSettings, url: string): P
     let response: RequestUrlResponse
     try {
         response = await requestUrl(options)
-        SettingsData.logImagesFetch && console.info('JiraIssue:FetchImage:', { request: options, response })
+        SettingsData.logImagesFetch && console.info('AsanaIssue:FetchImage:', { request: options, response })
     } catch (errorResponse) {
-        SettingsData.logImagesFetch && console.warn('JiraIssue:FetchImage:', { request: options, response: errorResponse })
+        SettingsData.logImagesFetch && console.warn('AsanaIssue:FetchImage:', { request: options, response: errorResponse })
         response = errorResponse
     }
 
@@ -156,7 +156,7 @@ async function preFetchImage(account: IJiraIssueAccountSettings, url: string): P
     return null
 }
 
-async function fetchIssueImages(issue: IJiraIssue) {
+async function fetchIssueImages(issue: IAsanaIssue) {
     if (issue.fields) {
         if (issue.fields.issuetype && issue.fields.issuetype.iconUrl) {
             issue.fields.issuetype.iconUrl = await preFetchImage(issue.account, issue.fields.issuetype.iconUrl)
@@ -175,7 +175,7 @@ async function fetchIssueImages(issue: IJiraIssue) {
 
 export default {
 
-    async getIssue(issueKey: string, options: { fields?: string[], account?: IJiraIssueAccountSettings } = {}): Promise<IJiraIssue> {
+    async getIssue(issueKey: string, options: { fields?: string[], account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaIssue> {
         const opt = {
             fields: options.fields || [],
             account: options.account || null,
@@ -190,12 +190,12 @@ export default {
                 account: opt.account,
                 queryParameters: queryParameters,
             }
-        ) as IJiraIssue
+        ) as IAsanaIssue
         await fetchIssueImages(issue)
         return issue
     },
 
-    async getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IJiraIssueAccountSettings } = {}): Promise<IJiraSearchResults> {
+    async getSearchResults(query: string, options: { limit?: number, offset?: number, fields?: string[], account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaSearchResults> {
         const opt = {
             fields: options.fields || [],
             offset: options.offset || 0,
@@ -215,7 +215,7 @@ export default {
                 queryParameters: queryParameters,
                 account: opt.account,
             }
-        ) as IJiraSearchResults
+        ) as IAsanaSearchResults
         for (const issue of searchResults.issues) {
             issue.account = searchResults.account
             await fetchIssueImages(issue)
@@ -223,7 +223,7 @@ export default {
         return searchResults
     },
 
-    async updateStatusColorCache(status: string, account: IJiraIssueAccountSettings): Promise<void> {
+    async updateStatusColorCache(status: string, account: IAsanaIssueAccountSettings): Promise<void> {
         if (status in account.cache.statusColor) {
             return
         }
@@ -232,7 +232,7 @@ export default {
                 method: 'GET',
                 path: `/status/${status}`,
             }
-        ) as IJiraStatus
+        ) as IAsanaStatus
         account.cache.statusColor[status] = response.statusCategory.colorName
     },
 
@@ -246,7 +246,7 @@ export default {
                         path: `/field`,
                         account: account,
                     }
-                ) as IJiraField[]
+                ) as IAsanaField[]
                 account.cache.customFieldsIdToName = {}
                 account.cache.customFieldsNameToId = {}
                 account.cache.customFieldsType = {}
@@ -271,7 +271,7 @@ export default {
     //         method: 'GET',
     //         path: `/jql/autocompletedata`,
     //     }
-    // ) as IJiraAutocompleteData
+    // ) as IAsanaAutocompleteData
     // settingData.cache.jqlAutocomplete = { fields: [], functions: {} }
     // for (const functionData of response.visibleFunctionNames) {
     //     for (const functionType of functionData.types) {
@@ -285,7 +285,7 @@ export default {
     // settingData.cache.jqlAutocomplete.fields = response.visibleFieldNames
     // },
 
-    async getJQLAutoCompleteField(fieldName: string, fieldValue: string): Promise<IJiraAutocompleteField> {
+    async getJQLAutoCompleteField(fieldName: string, fieldValue: string): Promise<IAsanaAutocompleteField> {
         const queryParameters = new URLSearchParams({
             fieldName: fieldName,
             fieldValue: fieldValue,
@@ -296,10 +296,10 @@ export default {
                 path: `/jql/autocompletedata/suggestions`,
                 queryParameters: queryParameters,
             }
-        ) as IJiraAutocompleteField
+        ) as IAsanaAutocompleteField
     },
 
-    async testConnection(account: IJiraIssueAccountSettings): Promise<boolean> {
+    async testConnection(account: IAsanaIssueAccountSettings): Promise<boolean> {
         await sendRequest(
             {
                 method: 'GET',
@@ -310,17 +310,17 @@ export default {
         return true
     },
 
-    async getLoggedUser(account: IJiraIssueAccountSettings = null): Promise<IJiraUser> {
+    async getLoggedUser(account: IAsanaIssueAccountSettings = null): Promise<IAsanaUser> {
         return await sendRequest(
             {
                 method: 'GET',
                 path: `/myself`,
                 account: account,
             }
-        ) as IJiraUser
+        ) as IAsanaUser
     },
 
-    async getDevStatus(issueId: string, options: { account?: IJiraIssueAccountSettings } = {}): Promise<IJiraDevStatus> {
+    async getDevStatus(issueId: string, options: { account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaDevStatus> {
         const opt = {
             account: options.account || null,
         }
@@ -335,10 +335,10 @@ export default {
                 noBasePath: true,
                 account: opt.account,
             }
-        ) as IJiraDevStatus
+        ) as IAsanaDevStatus
     },
 
-    async getBoards(projectKeyOrId: string, options: { limit?: number, offset?: number, account?: IJiraIssueAccountSettings } = {}): Promise<IJiraBoard[]> {
+    async getBoards(projectKeyOrId: string, options: { limit?: number, offset?: number, account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaBoard[]> {
         const opt = {
             offset: options.offset || 0,
             limit: options.limit || 50,
@@ -364,7 +364,7 @@ export default {
         return []
     },
 
-    async getSprints(boardId: number, options: { limit?: number, offset?: number, state?: ESprintState[], account?: IJiraIssueAccountSettings } = {}): Promise<IJiraSprint[]> {
+    async getSprints(boardId: number, options: { limit?: number, offset?: number, state?: ESprintState[], account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaSprint[]> {
         const opt = {
             state: options.state || [],
             offset: options.offset || 0,
@@ -391,7 +391,7 @@ export default {
         return []
     },
 
-    async getSprint(sprintId: number, options: { account?: IJiraIssueAccountSettings } = {}): Promise<IJiraSprint> {
+    async getSprint(sprintId: number, options: { account?: IAsanaIssueAccountSettings } = {}): Promise<IAsanaSprint> {
         const opt = {
             account: options.account || null
         }

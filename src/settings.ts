@@ -1,17 +1,17 @@
 import { App, Notice, PluginSettingTab, Setting, TextComponent } from 'obsidian'
-import JiraClient from './client/jiraClient'
-import { COLOR_SCHEMA_DESCRIPTION, EAuthenticationTypes, EColorSchema, ESearchColumnsTypes, IJiraIssueAccountSettings, IJiraIssueSettings, SEARCH_COLUMNS_DESCRIPTION } from './interfaces/settingsInterfaces'
-import JiraIssuePlugin from './main'
+import AsanaClient from './client/asanaClient'
+import { COLOR_SCHEMA_DESCRIPTION, EAuthenticationTypes, EColorSchema, ESearchColumnsTypes, IAsanaIssueAccountSettings, IAsanaIssueSettings, SEARCH_COLUMNS_DESCRIPTION } from './interfaces/settingsInterfaces'
+import AsanaIssuePlugin from './main'
 import { getRandomHexColor } from './utils'
 
 const AUTHENTICATION_TYPE_DESCRIPTION = {
     [EAuthenticationTypes.OPEN]: 'Open',
     [EAuthenticationTypes.BASIC]: 'Basic Authentication',
-    [EAuthenticationTypes.CLOUD]: 'Jira Cloud',
+    [EAuthenticationTypes.CLOUD]: 'Asana Cloud',
     [EAuthenticationTypes.BEARER_TOKEN]: 'Bearer Token',
 }
 
-export const DEFAULT_SETTINGS: IJiraIssueSettings = {
+export const DEFAULT_SETTINGS: IAsanaIssueSettings = {
     accounts: [],
     apiBasePath: '/rest/api/latest',
     cacheTime: '15m',
@@ -23,7 +23,7 @@ export const DEFAULT_SETTINGS: IJiraIssueSettings = {
     inlineIssueUrlToTag: true,
     inlineIssuePrefix: 'JIRA:',
     showColorBand: true,
-    showJiraLink: true,
+    showAsanaLink: true,
     searchColumns: [
         { type: ESearchColumnsTypes.KEY, compact: false },
         { type: ESearchColumnsTypes.SUMMARY, compact: false },
@@ -39,7 +39,7 @@ export const DEFAULT_SETTINGS: IJiraIssueSettings = {
     logImagesFetch: false,
 }
 
-export const DEFAULT_ACCOUNT: IJiraIssueAccountSettings = {
+export const DEFAULT_ACCOUNT: IAsanaIssueAccountSettings = {
     alias: 'Default',
     host: 'https://mycompany.atlassian.net',
     authenticationType: EAuthenticationTypes.OPEN,
@@ -62,13 +62,13 @@ function deepCopy(obj: any): any {
     return JSON.parse(JSON.stringify(obj))
 }
 
-export class JiraIssueSettingTab extends PluginSettingTab {
-    private _plugin: JiraIssuePlugin
+export class AsanaIssueSettingTab extends PluginSettingTab {
+    private _plugin: AsanaIssuePlugin
     private _onChangeListener: (() => void) | null = null
     private _searchColumnsDetails: HTMLDetailsElement = null
     private _showPassword: boolean = false
 
-    constructor(app: App, plugin: JiraIssuePlugin) {
+    constructor(app: App, plugin: AsanaIssuePlugin) {
         super(app, plugin)
         this._plugin = plugin
     }
@@ -107,7 +107,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
     }
 
     async saveSettings() {
-        const settingsToStore: IJiraIssueSettings = Object.assign({}, SettingsData, {
+        const settingsToStore: IAsanaIssueSettings = Object.assign({}, SettingsData, {
             // Global cache settings cleanup
             cache: DEFAULT_SETTINGS.cache, jqlAutocomplete: null, customFieldsIdToName: null, customFieldsNameToId: null, statusColorCache: null
         })
@@ -149,12 +149,12 @@ export class JiraIssueSettingTab extends PluginSettingTab {
 
     displayHeader() {
         const { containerEl } = this
-        containerEl.createEl('h2', { text: 'Jira Issue' })
+        containerEl.createEl('h2', { text: 'Asana Issue' })
         const description = containerEl.createEl('p')
         description.appendText('Need help? Explore the ')
         description.appendChild(createEl('a', {
-            text: 'Jira Issue documentation',
-            href: 'https://marc0l92.github.io/obsidian-jira-issue/',
+            text: 'Asana Issue documentation',
+            href: 'https://marc0l92.github.io/obsidian-asana-issue/',
         }))
         description.appendText('.')
 
@@ -164,10 +164,10 @@ export class JiraIssueSettingTab extends PluginSettingTab {
         const { containerEl } = this
         containerEl.createEl('h3', { text: 'Support development' })
         const description = containerEl.createEl('p')
-        description.appendText('If you enjoy JiraIssue, consider giving me your feedback on the ')
+        description.appendText('If you enjoy AsanaIssue, consider giving me your feedback on the ')
         description.appendChild(createEl('a', {
             text: 'github repository',
-            href: 'https://github.com/marc0l92/obsidian-jira-issue/issues',
+            href: 'https://github.com/marc0l92/obsidian-asana-issue/issues',
         }))
         description.appendText(', and maybe ')
         description.appendChild(createEl('a', {
@@ -225,7 +225,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                 }))
     }
 
-    displayModifyAccountPage(prevAccount: IJiraIssueAccountSettings, newAccount: IJiraIssueAccountSettings = null) {
+    displayModifyAccountPage(prevAccount: IAsanaIssueAccountSettings, newAccount: IAsanaIssueAccountSettings = null) {
         if (!newAccount) newAccount = Object.assign({}, prevAccount)
         const { containerEl } = this
         containerEl.empty()
@@ -242,7 +242,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                 }))
         new Setting(containerEl)
             .setName('Host')
-            .setDesc('Hostname of your company Jira server.')
+            .setDesc('Hostname of your company Asana server.')
             .addText(text => text
                 .setPlaceholder('Example: ' + DEFAULT_ACCOUNT.host)
                 .setValue(newAccount.host)
@@ -251,7 +251,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                 }))
         new Setting(containerEl)
             .setName('Authentication type')
-            .setDesc('Select how the plugin should authenticate in your Jira server.')
+            .setDesc('Select how the plugin should authenticate in your Asana server.')
             .addDropdown(dropdown => dropdown
                 .addOptions(AUTHENTICATION_TYPE_DESCRIPTION)
                 .setValue(newAccount.authenticationType)
@@ -264,7 +264,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
         if (newAccount.authenticationType === EAuthenticationTypes.BASIC) {
             new Setting(containerEl)
                 .setName('Username')
-                .setDesc('Username to access your Jira Server account using HTTP basic authentication.')
+                .setDesc('Username to access your Asana Server account using HTTP basic authentication.')
                 .addText(text => text
                     // .setPlaceholder('')
                     .setValue(newAccount.username)
@@ -273,7 +273,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                     }))
             new Setting(containerEl)
                 .setName('Password')
-                .setDesc('Password to access your Jira Server account using HTTP basic authentication.')
+                .setDesc('Password to access your Asana Server account using HTTP basic authentication.')
                 .addText(text => text
                     // .setPlaceholder('')
                     .setValue(newAccount.password)
@@ -291,7 +291,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
         } else if (newAccount.authenticationType === EAuthenticationTypes.CLOUD) {
             new Setting(containerEl)
                 .setName('Email')
-                .setDesc('Email of your Jira Cloud account.')
+                .setDesc('Email of your Asana Cloud account.')
                 .addText(text => text
                     // .setPlaceholder('')
                     .setValue(newAccount.username)
@@ -315,7 +315,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                         this.displayModifyAccountPage(prevAccount, newAccount)
                     }))
                 .descEl
-            apiTokenDescription.appendText('API token of your Jira Cloud account (')
+            apiTokenDescription.appendText('API token of your Asana Cloud account (')
             apiTokenDescription
                 .appendChild(createEl('a', {
                     text: 'Official Documentation',
@@ -325,7 +325,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
         } else if (newAccount.authenticationType === EAuthenticationTypes.BEARER_TOKEN) {
             new Setting(containerEl)
                 .setName('Bearer token')
-                .setDesc('Token to access your Jira account using OAuth3 Bearer token authentication.')
+                .setDesc('Token to access your Asana account using OAuth3 Bearer token authentication.')
                 .addText(text => text
                     // .setPlaceholder('')
                     .setValue(newAccount.bareToken)
@@ -389,18 +389,18 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                     button.setDisabled(true)
                     button.setButtonText("Testing...")
                     try {
-                        await JiraClient.testConnection(newAccount)
-                        new Notice('JiraIssue: Connection established!')
+                        await AsanaClient.testConnection(newAccount)
+                        new Notice('AsanaIssue: Connection established!')
                         try {
-                            const loggedUser = await JiraClient.getLoggedUser(newAccount)
-                            new Notice(`JiraIssue: Logged as ${loggedUser.displayName}`)
+                            const loggedUser = await AsanaClient.getLoggedUser(newAccount)
+                            new Notice(`AsanaIssue: Logged as ${loggedUser.displayName}`)
                         } catch (e) {
-                            new Notice('JiraIssue: Logged as Guest')
-                            console.error('JiraIssue:TestConnection', e)
+                            new Notice('AsanaIssue: Logged as Guest')
+                            console.error('AsanaIssue:TestConnection', e)
                         }
                     } catch (e) {
-                        console.error('JiraIssue:TestConnection', e)
-                        new Notice('JiraIssue: Connection failed!')
+                        console.error('AsanaIssue:TestConnection', e)
+                        new Notice('AsanaIssue: Connection failed!')
                     }
                     button.setButtonText("Test Connection")
                     button.setDisabled(false)
@@ -425,7 +425,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Default search results limit')
-            .setDesc('Maximum number of search results to retrieve when using jira-search without specifying a limit.')
+            .setDesc('Maximum number of search results to retrieve when using asana-search without specifying a limit.')
             .addText(text => text
                 // .setPlaceholder('Insert a number')
                 .setValue(SettingsData.searchResultsLimit.toString())
@@ -477,12 +477,12 @@ export class JiraIssueSettingTab extends PluginSettingTab {
                 }))
         
         new Setting(containerEl)
-            .setName('Show Jira link')
-            .setDesc('Make the result count in jira-search a link to the jira project with the jql from the search.')
+            .setName('Show Asana link')
+            .setDesc('Make the result count in asana-search a link to the asana project with the jql from the search.')
             .addToggle(toggle => toggle
-                .setValue(SettingsData.showJiraLink)
+                .setValue(SettingsData.showAsanaLink)
                 .onChange(async value => {
-                    SettingsData.showJiraLink = value
+                    SettingsData.showAsanaLink = value
                     await this.saveSettings()                    
                 }))
     }
@@ -493,7 +493,7 @@ export class JiraIssueSettingTab extends PluginSettingTab {
 
         const desc = document.createDocumentFragment()
         desc.append(
-            "Columns to display in the jira-search table visualization.",
+            "Columns to display in the asana-search table visualization.",
         )
         new Setting(containerEl).setDesc(desc)
         this._searchColumnsDetails = containerEl.createEl('details',
@@ -652,4 +652,4 @@ export class JiraIssueSettingTab extends PluginSettingTab {
         return options
     }
 }
-export const SettingsData: IJiraIssueSettings = deepCopy(DEFAULT_SETTINGS)
+export const SettingsData: IAsanaIssueSettings = deepCopy(DEFAULT_SETTINGS)

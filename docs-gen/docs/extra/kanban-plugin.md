@@ -1,6 +1,6 @@
 # Kanban plugin compatibility
 
-The Jira Issue plugin can be integrated with the [obsidian-kanban plugin](https://github.com/mgmeyers/obsidian-kanban) in order to create nice Kanban board that allows you to track the progress of your task.
+The Asana Issue plugin can be integrated with the [obsidian-kanban plugin](https://github.com/mgmeyers/obsidian-kanban) in order to create nice Kanban board that allows you to track the progress of your task.
 
 ![kanban1](/img/kanban1.png)
 

@@ -22,16 +22,16 @@ export class QuerySuggest extends EditorSuggest<SuggestionEntry> {
         if (!cursorLine.substring(0, cursor.ch).match(/^\s*query\s*:/)) {
             return null
         }
-        // check cursor inside jira-search fence
-        let jiraSearchFenceStartFound = false
+        // check cursor inside asana-search fence
+        let asanaSearchFenceStartFound = false
         for (let i = cursor.line - 1; i >= 0; i--) {
             const line = editor.getLine(i)
-            if (line.match(/^\s*```\s*jira-search/)) {
-                jiraSearchFenceStartFound = true
+            if (line.match(/^\s*```\s*asana-search/)) {
+                asanaSearchFenceStartFound = true
                 break
             }
         }
-        if (!jiraSearchFenceStartFound) {
+        if (!asanaSearchFenceStartFound) {
             return null
         }
 
@@ -91,14 +91,14 @@ export class QuerySuggest extends EditorSuggest<SuggestionEntry> {
     renderSuggestion(value: SuggestionEntry, el: HTMLElement): void {
         // console.log('renderSuggestion', { value, el })
         if (value.isFunction) {
-            el.createSpan({ text: 'fx', cls: 'jira-issue-suggestion is-function' })
+            el.createSpan({ text: 'fx', cls: 'asana-issue-suggestion is-function' })
         }
-        el.createSpan({ text: value.name, cls: 'jira-issue-suggestion' })
+        el.createSpan({ text: value.name, cls: 'asana-issue-suggestion' })
     }
 
     selectSuggestion(value: SuggestionEntry, evt: MouseEvent | KeyboardEvent): void {
         // console.log('selectSuggestion', { value, evt }, this.context)
         if (!this.context) return
-        this.context.editor.replaceRange(value.name, this.context.start, this.context.end, 'jira-issue')
+        this.context.editor.replaceRange(value.name, this.context.start, this.context.end, 'asana-issue')
     }
 }

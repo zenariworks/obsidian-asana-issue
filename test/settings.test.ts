@@ -1,8 +1,8 @@
 jest.mock('obsidian')
-jest.mock('../src/client/jiraClient')
+jest.mock('../src/client/asanaClient')
 
-import { EAuthenticationTypes, EColorSchema, IJiraIssueSettings } from "../src/interfaces/settingsInterfaces"
-import { DEFAULT_ACCOUNT, DEFAULT_SETTINGS, JiraIssueSettingTab, SettingsData } from "../src/settings"
+import { EAuthenticationTypes, EColorSchema, IAsanaIssueSettings } from "../src/interfaces/settingsInterfaces"
+import { DEFAULT_ACCOUNT, DEFAULT_SETTINGS, AsanaIssueSettingTab, SettingsData } from "../src/settings"
 
 function deepCopy(obj: any): any {
     return JSON.parse(JSON.stringify(obj))
@@ -34,15 +34,15 @@ const StoredSettings = {
     ],
     searchResultsLimit: 99,
     showColorBand: true,
-    showJiraLink: true,
-} as IJiraIssueSettings
+    showAsanaLink: true,
+} as IAsanaIssueSettings
 
 describe('Settings', () => {
     const pluginMock = {
         loadData: jest.fn(),
         saveData: jest.fn(),
     }
-    const settingTab = new JiraIssueSettingTab(null, pluginMock as any)
+    const settingTab = new AsanaIssueSettingTab(null, pluginMock as any)
 
     test('loadSettings empty settings to default', async () => {
         pluginMock.loadData.mockReturnValueOnce({})

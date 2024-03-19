@@ -1,9 +1,9 @@
 ---
 sidebar_position: 2
 ---
-# Jira Search
+# Asana Search
 
-This fence component allows to insert a table that displays the results of a Jira query.
+This fence component allows to insert a table that displays the results of a Asana query.
 The syntax to write the query is described in the official JQL Documentation.
 
 ## Basic usage
@@ -11,7 +11,7 @@ The syntax to write the query is described in the official JQL Documentation.
 The basic usage of this block is to put the query directly in the fence. Example:
 
 ````
-```jira-search
+```asana-search
 resolution = Unresolved AND assignee = currentUser() AND status = 'In Progress' order by priority DESC
 ```
 ````
@@ -20,12 +20,12 @@ The columns displayed in the table can be configured in the settings. [See more]
 
 ## Advanced usage
 
-It is possible to describe in each jira-search fence how the search results are rendered using the following keyworkds:
+It is possible to describe in each asana-search fence how the search results are rendered using the following keyworkds:
 
 | Keyword | Description | Default | Values |
 | :- | :- | :- | :- |
 | `type` | Rendering mode of the search results | `TABLE` | `TABLE` or `LIST` |
-| `query` | Query to use with Jira to retrieve the results |  |  |
+| `query` | Query to use with Asana to retrieve the results |  |  |
 | `limit` | Maximum number of items to display | Use value from settings | Integer number |
 | `columns` | List of columns to render ([Available columns](#standard-fields)) | Use value from settings | Comma separated list |
 | `account` | Explicitly select an account providing the alias | Try all account by priority | Account alias |
@@ -33,7 +33,7 @@ It is possible to describe in each jira-search fence how the search results are 
 Example:
 
 ````
-```jira-search
+```asana-search
 type: TABLE
 query: status = 'In Progress' order by priority DESC
 limit: 15
@@ -44,7 +44,7 @@ account: Default
 
 ## Standard fields
 
-The plugin is able to render as columns the following Jira standard fields:
+The plugin is able to render as columns the following Asana standard fields:
 
 ```
 KEY, SUMMARY, DESCRIPTION, TYPE, CREATED, UPDATED, REPORTER, ASSIGNEE, PRIORITY, STATUS, DUE_DATE,
@@ -59,7 +59,7 @@ DEV_STATUS
 
 Example:
 ````
-```jira-search
+```asana-search
 query: status = 'In Progress' order by priority DESC
 columns: key, -key, type, -type, reporter, -reporter, created, -created
 ```
@@ -68,11 +68,11 @@ columns: key, -key, type, -type, reporter, -reporter, created, -created
 
 ## Custom fields
 
-Jira non standard fields (a.k.a. custom fields) can be inserted using the `$` symbol.
+Asana non standard fields (a.k.a. custom fields) can be inserted using the `$` symbol.
 
 Example:
 ````
-```jira-search
+```asana-search
 query: status = 'In Progress' order by priority DESC
 columns: key, summary, $Epic Link, $Global Rank, $12313422, -$12313499
 ```
@@ -81,11 +81,11 @@ columns: key, summary, $Epic Link, $Global Rank, $12313422, -$12313499
 It is possible to provide the ID number of the custom field or its name.
 
 ## Link to notes
-The special column `NOTES` can be used with `jira-search` tables to create a column that shows all the notes that start with the issue key.
+The special column `NOTES` can be used with `asana-search` tables to create a column that shows all the notes that start with the issue key.
 
 Example:
 ````
-```jira-search
+```asana-search
 query: status = 'In Progress' order by priority DESC
 columns: key, summary, status, notes
 ```
@@ -106,7 +106,7 @@ If no notes are found, a `➕` button will be shown in order to allow the creati
 
 You can also access the frontmatter section of the linked notes using the [jsonpath](https://github.com/dchester/jsonpath) syntax after the column `NOTES`. Example:
 
-```jira-search
+```asana-search
 query: status = 'In Progress' order by priority DESC
 columns: key, notes, notes.title, notes.status, notes.tags, notes.tags[0], notes..book[?(@.price<30 && @.category=="fiction")]
 ```

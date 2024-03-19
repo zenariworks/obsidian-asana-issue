@@ -1,8 +1,8 @@
 import { RangeSet, StateField } from "@codemirror/state"
 import { Decoration, DecorationSet, EditorView, MatchDecorator, PluginSpec, PluginValue, ViewPlugin, ViewUpdate, WidgetType } from "@codemirror/view"
 import { editorLivePreviewField } from "obsidian"
-import JiraClient from "../client/jiraClient"
-import { IJiraIssue } from "../interfaces/issueInterfaces"
+import AsanaClient from "../client/asanaClient"
+import { IAsanaIssue } from "../interfaces/issueInterfaces"
 import ObjectsCache from "../objectsCache"
 import { SettingsData } from "../settings"
 import RC from "./renderingCommon"
@@ -39,7 +39,7 @@ class InlineIssueWidget extends WidgetType {
         this._issueKey = key
         this._compact = compact
         this._host = host
-        this._htmlContainer = createSpan({ cls: 'ji-inline-issue jira-issue-container' })
+        this._htmlContainer = createSpan({ cls: 'ji-inline-issue asana-issue-container' })
         this.buildTag()
     }
 
@@ -49,12 +49,12 @@ class InlineIssueWidget extends WidgetType {
             if (cachedIssue.isError) {
                 this._htmlContainer.replaceChildren(RC.renderIssueError(this._issueKey, cachedIssue.data as string))
             } else {
-                this._htmlContainer.replaceChildren(RC.renderIssue(cachedIssue.data as IJiraIssue, this._compact))
+                this._htmlContainer.replaceChildren(RC.renderIssue(cachedIssue.data as IAsanaIssue, this._compact))
             }
         } else {
             this._htmlContainer.replaceChildren(RC.renderLoadingItem(this._issueKey))
-            JiraClient.getIssue(this._issueKey, { account: getAccountByHost(this._host) }).then(newIssue => {
-                const issue = ObjectsCache.add(this._issueKey, newIssue).data as IJiraIssue
+            AsanaClient.getIssue(this._issueKey, { account: getAccountByHost(this._host) }).then(newIssue => {
+                const issue = ObjectsCache.add(this._issueKey, newIssue).data as IAsanaIssue
                 this._htmlContainer.replaceChildren(RC.renderIssue(issue, this._compact))
             }).catch(err => {
                 ObjectsCache.add(this._issueKey, err, true)
@@ -69,12 +69,12 @@ class InlineIssueWidget extends WidgetType {
 }
 
 // Global variable with the last instance of the MatchDecorator rebuilt every time the settings are changed
-let jiraTagMatchDecorator: IMatchDecoratorRef = { ref: null }
-let jiraUrlMatchDecorator: IMatchDecoratorRef = { ref: null }
+let asanaTagMatchDecorator: IMatchDecoratorRef = { ref: null }
+let asanaUrlMatchDecorator: IMatchDecoratorRef = { ref: null }
 
 function buildMatchDecorators() {
     if (SettingsData.inlineIssuePrefix !== '') {
-        jiraTagMatchDecorator.ref = new MatchDecorator({
+        asanaTagMatchDecorator.ref = new MatchDecorator({
             regexp: new RegExp(`${SettingsData.inlineIssuePrefix}(${COMPACT_SYMBOL}?)(${JIRA_KEY_REGEX})`, 'g'),
             decoration: (match: RegExpExecArray, view: EditorView, pos: number) => {
                 const compact = !!match[1]
@@ -83,7 +83,7 @@ function buildMatchDecorators() {
                 if (!isEditorInLivePreviewMode(view) || isCursorInsideTag(view, pos, tagLength) || isSelectionContainsTag(view, pos, tagLength)) {
                     return Decoration.mark({
                         tagName: 'div',
-                        class: 'HyperMD-codeblock HyperMD-codeblock-bg jira-issue-inline-mark',
+                        class: 'HyperMD-codeblock HyperMD-codeblock-bg asana-issue-inline-mark',
                     })
                 } else {
                     return Decoration.replace({
@@ -93,13 +93,13 @@ function buildMatchDecorators() {
             }
         })
     } else {
-        jiraTagMatchDecorator.ref = null
+        asanaTagMatchDecorator.ref = null
     }
 
     if (SettingsData.inlineIssueUrlToTag) {
         const urls: string[] = []
         SettingsData.accounts.forEach(account => urls.push(escapeRegexp(account.host)))
-        jiraUrlMatchDecorator.ref = new MatchDecorator({
+        asanaUrlMatchDecorator.ref = new MatchDecorator({
             regexp: new RegExp(`(${COMPACT_SYMBOL}?)(${urls.join('|')})/browse/(${JIRA_KEY_REGEX})`, 'g'),
             decoration: (match: RegExpExecArray, view: EditorView, pos: number) => {
                 const compact = !!match[1]
@@ -109,7 +109,7 @@ function buildMatchDecorators() {
                 if (!isEditorInLivePreviewMode(view) || isCursorInsideTag(view, pos, tagLength) || isSelectionContainsTag(view, pos, tagLength)) {
                     return Decoration.mark({
                         tagName: 'div',
-                        class: 'HyperMD-codeblock HyperMD-codeblock-bg jira-issue-inline-mark',
+                        class: 'HyperMD-codeblock HyperMD-codeblock-bg asana-issue-inline-mark',
                     })
                 } else {
                     return Decoration.replace({
@@ -119,7 +119,7 @@ function buildMatchDecorators() {
             }
         })
     } else {
-        jiraUrlMatchDecorator.ref = null
+        asanaUrlMatchDecorator.ref = null
     }
 }
 
@@ -160,11 +160,11 @@ export class ViewPluginManager {
 
     constructor() {
         this.update()
-        const jiraTagViewPlugin = buildViewPluginClass(jiraTagMatchDecorator)
-        const jiraUrlViewPlugin = buildViewPluginClass(jiraUrlMatchDecorator)
+        const asanaTagViewPlugin = buildViewPluginClass(asanaTagMatchDecorator)
+        const asanaUrlViewPlugin = buildViewPluginClass(asanaUrlMatchDecorator)
         this._viewPlugins = [
-            ViewPlugin.fromClass(jiraTagViewPlugin.class, jiraTagViewPlugin.spec),
-            ViewPlugin.fromClass(jiraUrlViewPlugin.class, jiraUrlViewPlugin.spec),
+            ViewPlugin.fromClass(asanaTagViewPlugin.class, asanaTagViewPlugin.spec),
+            ViewPlugin.fromClass(asanaUrlViewPlugin.class, asanaUrlViewPlugin.spec),
         ]
     }
 

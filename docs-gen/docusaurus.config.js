@@ -6,11 +6,11 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula')
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Obsidian Jira Issue',
-  tagline: 'Track the progress of Atlassian Jira issues from your Obsidian notes',
+  title: 'Obsidian Asana Issue',
+  tagline: 'Track the progress of Atlassian Asana issues from your Obsidian notes',
   url: 'https://marc0l92.github.io',
   trailingSlash: false,
-  baseUrl: '/obsidian-jira-issue/',
+  baseUrl: '/obsidian-asana-issue/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   // favicon: 'img/favicon.ico',
@@ -18,7 +18,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'marc0l92', // Usually your GitHub org/user name.
-  projectName: 'obsidian-jira-issue', // Usually your repo name.
+  projectName: 'obsidian-asana-issue', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -47,9 +47,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Obsidian Jira Issue',
+        title: 'Obsidian Asana Issue',
         // logo: {
-        //   alt: 'obsidian-jira-issue',
+        //   alt: 'obsidian-asana-issue',
         //   src: 'img/logo.svg',
         // },
         items: [
@@ -83,7 +83,7 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/marc0l92/obsidian-jira-issue',
+            href: 'https://github.com/marc0l92/obsidian-asana-issue',
             label: 'GitHub',
             position: 'right',
           },
@@ -115,7 +115,7 @@ const config = {
         //     ],
         //   },
         // ],
-        copyright: `Copyright © ${new Date().getFullYear()} obsidian-jira-issue. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} obsidian-asana-issue. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,

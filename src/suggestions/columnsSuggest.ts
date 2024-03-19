@@ -27,17 +27,17 @@ export class ColumnsSuggest extends EditorSuggest<SuggestionEntry> {
             // console.log('!check cursor is after "columns:"')
             return null
         }
-        // check cursor inside jira-search fence
-        let jiraSearchFenceStartFound = false
+        // check cursor inside asana-search fence
+        let asanaSearchFenceStartFound = false
         for (let i = cursor.line - 1; i >= 0; i--) {
             const line = editor.getLine(i)
-            if (line.match(/^\s*```\s*jira-search/)) {
-                jiraSearchFenceStartFound = true
+            if (line.match(/^\s*```\s*asana-search/)) {
+                asanaSearchFenceStartFound = true
                 break
             }
         }
-        if (!jiraSearchFenceStartFound) {
-            // console.log('!check cursor inside jira-search fence')
+        if (!asanaSearchFenceStartFound) {
+            // console.log('!check cursor inside asana-search fence')
             return null
         }
 
@@ -90,12 +90,12 @@ export class ColumnsSuggest extends EditorSuggest<SuggestionEntry> {
     renderSuggestion(value: SuggestionEntry, el: HTMLElement): void {
         // console.log('renderSuggestion', { value, el })
         if (value.isCompact) {
-            el.createSpan({ text: COMPACT_SYMBOL, cls: 'jira-issue-suggestion is-compact' })
+            el.createSpan({ text: COMPACT_SYMBOL, cls: 'asana-issue-suggestion is-compact' })
         }
         if (value.isCustomField) {
-            el.createSpan({ text: '$', cls: 'jira-issue-suggestion is-custom-field' })
+            el.createSpan({ text: '$', cls: 'asana-issue-suggestion is-custom-field' })
         }
-        el.createSpan({ text: value.name, cls: 'jira-issue-suggestion' })
+        el.createSpan({ text: value.name, cls: 'asana-issue-suggestion' })
     }
 
     selectSuggestion(value: SuggestionEntry, evt: MouseEvent | KeyboardEvent): void {
@@ -103,6 +103,6 @@ export class ColumnsSuggest extends EditorSuggest<SuggestionEntry> {
         if (!this.context) return
 
         const selectedColumn = ' ' + (value.isCompact ? COMPACT_SYMBOL : '') + (value.isCustomField ? '$' : '') + value.name + ', '
-        this.context.editor.replaceRange(selectedColumn, this.context.start, this.context.end, 'jira-issue')
+        this.context.editor.replaceRange(selectedColumn, this.context.start, this.context.end, 'asana-issue')
     }
 }

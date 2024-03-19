@@ -6,4 +6,4 @@ sidebar_position: 6
 ## clearCache
 - `$ji.util.clearCache()`
 
-Clear cache related to Jira requests. The cache retention time can be configured in the [plugin settings](/docs/configuration/advanced#cache-time).
+Clear cache related to Asana requests. The cache retention time can be configured in the [plugin settings](/docs/configuration/advanced#cache-time).

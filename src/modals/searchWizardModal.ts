@@ -28,7 +28,7 @@ export class SearchWizardModal extends Modal {
                     this._searchView.type = value as ESearchResultsRenderingTypes
                 }))
         new Setting(contentEl)
-            .setName('Jira query')
+            .setName('Asana query')
             .addTextArea(textArea => textArea
                 .setValue(this._searchView.query)
                 .onChange(async value => {

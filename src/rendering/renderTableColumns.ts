@@ -1,9 +1,9 @@
 import { setIcon, TFile } from "obsidian"
-import { IJiraDevStatus, IJiraIssue } from "../interfaces/issueInterfaces"
+import { IAsanaDevStatus, IAsanaIssue } from "../interfaces/issueInterfaces"
 import RC, { JIRA_STATUS_COLOR_MAP, JIRA_STATUS_COLOR_MAP_BY_NAME } from "./renderingCommon"
 import * as jsonpath from 'jsonpath'
 import ObjectsCache from "../objectsCache"
-import JiraClient from "../client/jiraClient"
+import AsanaClient from "../client/asanaClient"
 import { AVATAR_RESOLUTION, ESearchColumnsTypes, ISearchColumn } from "../interfaces/settingsInterfaces"
 
 const DESCRIPTION_COMPACT_MAX_LENGTH = 20
@@ -36,7 +36,7 @@ function deltaToStr(delta: number): string {
     return ''
 }
 
-export const renderTableColumn = async (columns: ISearchColumn[], issue: IJiraIssue, row: HTMLTableRowElement): Promise<void> => {
+export const renderTableColumn = async (columns: ISearchColumn[], issue: IAsanaIssue, row: HTMLTableRowElement): Promise<void> => {
     let markdownNotes: TFile[] = null
     for (const column of columns) {
         switch (column.type) {
@@ -273,12 +273,12 @@ export const renderTableColumn = async (columns: ISearchColumn[], issue: IJiraIs
                 break
             case ESearchColumnsTypes.DEV_STATUS:
                 const cacheKey = 'dev-status-' + issue.id
-                let devStatus: IJiraDevStatus = null
+                let devStatus: IAsanaDevStatus = null
                 const devStatusCacheItem = ObjectsCache.get(cacheKey)
                 if (devStatusCacheItem) {
-                    devStatus = devStatusCacheItem.data as IJiraDevStatus
+                    devStatus = devStatusCacheItem.data as IAsanaDevStatus
                 } else {
-                    devStatus = await JiraClient.getDevStatus(issue.id, { account: issue.account })
+                    devStatus = await AsanaClient.getDevStatus(issue.id, { account: issue.account })
                     ObjectsCache.add(cacheKey, devStatus)
                 }
                 const cell = createEl('td', { parent: row })
@@ -328,7 +328,7 @@ function renderNoteFrontMatter(column: ISearchColumn, note: TFile, noteCell: HTM
     }
 }
 
-function renderCustomField(issue: IJiraIssue, customField: string): string {
+function renderCustomField(issue: IAsanaIssue, customField: string): string {
     if (!Number(customField)) {
         customField = issue.account.cache.customFieldsNameToId[customField]
     }

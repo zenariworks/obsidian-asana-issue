@@ -8,7 +8,7 @@ Other plugin settings.
 To speed up the issues rendering and reduce the network usage, the plugin relies on a in-memory cache.
 
 The cache stores the issues data and the JQL search results.
-Every time a component is rendered, the plugin first check if the data is available in the cache and if not, it retrieves the data from the Jira server.
+Every time a component is rendered, the plugin first check if the data is available in the cache and if not, it retrieves the data from the Asana server.
 
 The items stored in the in-memory cache have an expiration date in order to periodically download updated information on the issues status and the search results. The default value is `15m`.
 
@@ -26,4 +26,4 @@ Examples
 ## Debug mode
 In order to help users debug authentication issues and provide useful information when submitting new Issues on GitHub, the plugin provides a way to increase the debug information in the Obsidian.md console.
 
-The `Log Requests and Responses` option allow to display in the console all the request and responses exchanged with the Jira Server.
+The `Log Requests and Responses` option allow to display in the console all the request and responses exchanged with the Asana Server.

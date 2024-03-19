@@ -1,4 +1,4 @@
-import { IJiraAutocompleteDataField } from "../src/interfaces/issueInterfaces"
+import { IAsanaAutocompleteDataField } from "../src/interfaces/issueInterfaces"
 import { EAuthenticationTypes } from "../src/interfaces/settingsInterfaces"
 
 const kEmptyAccountCache = {
@@ -6,7 +6,7 @@ const kEmptyAccountCache = {
     customFieldsNameToId: {},
     customFieldsType: {},
     jqlAutocomplete: {
-        fields: [] as IJiraAutocompleteDataField[],
+        fields: [] as IAsanaAutocompleteDataField[],
         functions: {},
     },
     statusColor: {},

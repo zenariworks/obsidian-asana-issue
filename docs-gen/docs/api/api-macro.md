@@ -12,7 +12,7 @@ sidebar_position: 4
 
 
 ## getWorkLogBySprint
-- `$ji.macro.getWorkLogBySprint(projectKeyOrId: string, sprint: IJiraSprint)`
+- `$ji.macro.getWorkLogBySprint(projectKeyOrId: string, sprint: IAsanaSprint)`
 
 
 ## getWorkLogByDates

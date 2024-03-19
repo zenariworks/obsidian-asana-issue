@@ -1,4 +1,4 @@
-import { IJiraIssue, toDefaultedIssue } from "../src/interfaces/issueInterfaces"
+import { IAsanaIssue, toDefaultedIssue } from "../src/interfaces/issueInterfaces"
 
 const kVal1 = 'val1'
 const kVal2 = 'val2'
@@ -6,7 +6,7 @@ const kVal3 = 'val3'
 
 describe('IssueInterfaces', () => {
     test('toDefaultedIssue empty issue', () => {
-        const issue = toDefaultedIssue({} as IJiraIssue)
+        const issue = toDefaultedIssue({} as IAsanaIssue)
         expect(issue.fields.creator.displayName).toEqual('')
         expect(issue.fields.status.statusCategory.colorName).toEqual('')
     })

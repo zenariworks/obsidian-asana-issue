@@ -1,4 +1,4 @@
-jest.mock('../src/client/jiraClient', () => {
+jest.mock('../src/client/asanaClient', () => {
     return {
         getIssue: jest.fn(),
         getSearchResults: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('../src/objectsCache', () => {
 
 import ObjectsCache from "../src/objectsCache"
 import API from "../src/api/api"
-import JiraClient from "../src/client/jiraClient"
+import AsanaClient from "../src/client/asanaClient"
 
 const kIssueKey = 'AAA-123'
 const kIssue = { key: kIssueKey }
@@ -33,7 +33,7 @@ describe('API', () => {
 
     describe('defaulted', () => {
         test('getIssue', async () => {
-            (JiraClient.getIssue as jest.Mock).mockReturnValue(kIssue);
+            (AsanaClient.getIssue as jest.Mock).mockReturnValue(kIssue);
 
             const baseIssue = await API.base.getIssue(kIssueKey)
             const defaultedIssue = await API.defaulted.getIssue(kIssueKey)
@@ -43,7 +43,7 @@ describe('API', () => {
             expect(defaultedIssue.fields.assignee.displayName).toEqual('')
         })
         test('getSearchResults', async () => {
-            (JiraClient.getSearchResults as jest.Mock).mockReturnValue(kSearchResults);
+            (AsanaClient.getSearchResults as jest.Mock).mockReturnValue(kSearchResults);
 
             const baseSearchResults = await API.base.getSearchResults(kSearchQuery)
             const defaultedSearchResults = await API.defaulted.getSearchResults(kSearchQuery)
@@ -59,8 +59,8 @@ describe('API', () => {
             (ObjectsCache.get as jest.Mock)
                 .mockReturnValueOnce(null)
                 .mockReturnValueOnce(null);
-            (JiraClient.getBoards as jest.Mock).mockReturnValueOnce([kBoard]);
-            (JiraClient.getSprints as jest.Mock).mockReturnValueOnce([kSprint]);
+            (AsanaClient.getBoards as jest.Mock).mockReturnValueOnce([kBoard]);
+            (AsanaClient.getSprints as jest.Mock).mockReturnValueOnce([kSprint]);
 
             expect(await API.macro.getActiveSprint(kProject)).toEqual(kSprint)
 
@@ -70,16 +70,16 @@ describe('API', () => {
             expect(ObjectsCache.add).toBeCalledTimes(2)
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kProject)), [kBoard])
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(2, expect.stringMatching(new RegExp(kBoardId.toString())), [kSprint])
-            expect(JiraClient.getBoards).toBeCalledTimes(1)
-            expect(JiraClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
-            expect(JiraClient.getSprints).toBeCalledTimes(1)
-            expect(JiraClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { state: ['active'], limit: 1 })
+            expect(AsanaClient.getBoards).toBeCalledTimes(1)
+            expect(AsanaClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
+            expect(AsanaClient.getSprints).toBeCalledTimes(1)
+            expect(AsanaClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { state: ['active'], limit: 1 })
         })
         test('cached board, requested sprint', async () => {
             (ObjectsCache.get as jest.Mock)
                 .mockReturnValueOnce({ data: [kBoard] })
                 .mockReturnValueOnce(null);
-            (JiraClient.getSprints as jest.Mock).mockReturnValueOnce([kSprint]);
+            (AsanaClient.getSprints as jest.Mock).mockReturnValueOnce([kSprint]);
 
             expect(await API.macro.getActiveSprint(kProject)).toEqual(kSprint)
 
@@ -88,9 +88,9 @@ describe('API', () => {
             expect(ObjectsCache.get).toHaveBeenNthCalledWith(2, expect.stringMatching(new RegExp(kBoardId.toString())))
             expect(ObjectsCache.add).toBeCalledTimes(1)
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kBoardId.toString())), [kSprint])
-            expect(JiraClient.getBoards).not.toBeCalled()
-            expect(JiraClient.getSprints).toBeCalledTimes(1)
-            expect(JiraClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { limit: 1, state: ["active"] })
+            expect(AsanaClient.getBoards).not.toBeCalled()
+            expect(AsanaClient.getSprints).toBeCalledTimes(1)
+            expect(AsanaClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { limit: 1, state: ["active"] })
         })
         test('cached board, cached sprint', async () => {
             (ObjectsCache.get as jest.Mock)
@@ -103,12 +103,12 @@ describe('API', () => {
             expect(ObjectsCache.get).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kProject)))
             expect(ObjectsCache.get).toHaveBeenNthCalledWith(2, expect.stringMatching(new RegExp(kBoardId.toString())))
             expect(ObjectsCache.add).not.toBeCalled()
-            expect(JiraClient.getBoards).not.toBeCalled()
-            expect(JiraClient.getSprints).not.toBeCalled()
+            expect(AsanaClient.getBoards).not.toBeCalled()
+            expect(AsanaClient.getSprints).not.toBeCalled()
         })
         test('board not found', async () => {
             (ObjectsCache.get as jest.Mock).mockReturnValueOnce(null);
-            (JiraClient.getBoards as jest.Mock).mockReturnValueOnce([]);
+            (AsanaClient.getBoards as jest.Mock).mockReturnValueOnce([]);
 
             expect(await API.macro.getActiveSprint(kProject)).toEqual(null)
 
@@ -116,14 +116,14 @@ describe('API', () => {
             expect(ObjectsCache.get).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kProject)))
             expect(ObjectsCache.add).toBeCalledTimes(1)
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kProject)), [])
-            expect(JiraClient.getBoards).toBeCalledTimes(1)
-            expect(JiraClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
-            expect(JiraClient.getSprints).not.toBeCalled()
+            expect(AsanaClient.getBoards).toBeCalledTimes(1)
+            expect(AsanaClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
+            expect(AsanaClient.getSprints).not.toBeCalled()
         })
         test('board found, sprint not found', async () => {
             (ObjectsCache.get as jest.Mock).mockReturnValueOnce(null).mockReturnValueOnce(null);
-            (JiraClient.getBoards as jest.Mock).mockReturnValueOnce([kBoard]);
-            (JiraClient.getSprints as jest.Mock).mockReturnValueOnce([]);
+            (AsanaClient.getBoards as jest.Mock).mockReturnValueOnce([kBoard]);
+            (AsanaClient.getSprints as jest.Mock).mockReturnValueOnce([]);
 
             expect(await API.macro.getActiveSprint(kProject)).toEqual(null)
 
@@ -133,10 +133,10 @@ describe('API', () => {
             expect(ObjectsCache.add).toBeCalledTimes(2)
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(1, expect.stringMatching(new RegExp(kProject)), [kBoard])
             expect(ObjectsCache.add).toHaveBeenNthCalledWith(2, expect.stringMatching(new RegExp(kBoardId.toString())), [])
-            expect(JiraClient.getBoards).toBeCalledTimes(1)
-            expect(JiraClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
-            expect(JiraClient.getSprints).toBeCalledTimes(1)
-            expect(JiraClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { state: ['active'], limit: 1 })
+            expect(AsanaClient.getBoards).toBeCalledTimes(1)
+            expect(AsanaClient.getBoards).toHaveBeenNthCalledWith(1, kProject, { limit: 1 })
+            expect(AsanaClient.getSprints).toBeCalledTimes(1)
+            expect(AsanaClient.getSprints).toHaveBeenNthCalledWith(1, kBoardId, { state: ['active'], limit: 1 })
         })
     })
 
@@ -150,7 +150,7 @@ describe('API', () => {
         })
         test('not found', async () => {
             (ObjectsCache.get as jest.Mock).mockReturnValueOnce(null);
-            (JiraClient.getBoards as jest.Mock).mockReturnValueOnce([]);
+            (AsanaClient.getBoards as jest.Mock).mockReturnValueOnce([]);
 
             expect(await API.macro.getActiveSprintName(kProject)).toEqual('')
         })

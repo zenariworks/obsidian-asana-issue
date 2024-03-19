@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
     img: './img/inlineIssues.png',
     description: (
       <>
-        Allows to insert Jira Issue inside the flow of your notes.
+        Allows to insert Asana Issue inside the flow of your notes.
       </>
     ),
   },
